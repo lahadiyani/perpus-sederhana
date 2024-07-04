@@ -1,6 +1,19 @@
 {
-  "version": 2,
+  "buildCommand": "pip install -r requirements.txt && flask run",
   "builds": [
-    { "src": "run.py", "use": "@vercel/python" }
+    {
+      "src": "run.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "run.py"
+    }
   ]
 }
