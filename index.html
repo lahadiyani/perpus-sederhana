@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Book Search</h1>
+        <div class="input-group mt-3 mb-3">
+            <input type="search" class="form-control" id="searching" placeholder="Enter search text...">
+            <button type="button" class="btn btn-primary" id="searchButton">Search</button>
+        </div>
+        <div id="loading" class="d-none text-center mb-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div id="results"></div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        const searchInput = document.querySelector('#searching');
+        const searchButton = document.querySelector('#searchButton');
+        const resultsDiv = document.querySelector('#results');
+        const loadingDiv = document.querySelector('#loading');
+
+        searchButton.addEventListener('click', function() {
+            executeSearch();
+        });
+
+        searchInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                executeSearch();
+            }
+        });
+
+        function executeSearch() {
+            const searchValue = searchInput.value.trim();
+            if (searchValue !== '') {
+                showLoading();
+                fetchBooks(searchValue);
+            } else {
+                resultsDiv.textContent = 'Please enter a search term.';
+            }
+        }
+
+        function fetchBooks(searchText) {
+            const url = 'http://localhost:3000/api/book/search';
+            const apiKey = '5ehadi';  // Ganti dengan API key yang valid
+
+            const formData = new FormData();
+            formData.append('text', searchText);
+            formData.append('key', apiKey);
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                resultsDiv.textContent = 'Failed to fetch data. Please try again later.';
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        }
+
+        function displayResults(data) {
+            resultsDiv.innerHTML = '';  // Clear previous results
+            if (data.error) {
+                resultsDiv.textContent = data.error;
+            } else {
+                const table = document.createElement('table');
+                table.classList.add('table', 'table-striped');
+
+                const headerRow = document.createElement('thead');
+                headerRow.innerHTML = `
+                    <tr>
+                        <th>Title</th>
+                        <th>Page Count</th>
+                        <th>Year</th>
+                        <th>Language</th>
+                        <th>Size</th>
+                        <th>Quote</th>
+                        <th>Image</th>
+                        <th>Link</th>
+                    </tr>
+                `;
+                table.appendChild(headerRow);
+
+                const tbody = document.createElement('tbody');
+                data.forEach(book => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${book.title}</td>
+                        <td>${book.page_count}</td>
+                        <td>${book.year}</td>
+                        <td>${book.language}</td>
+                        <td>${book.size}</td>
+                        <td>${book.quote}</td>
+                        <td><img src="${book.image_url}" alt="Book Cover" style="max-width: 100px;"></td>
+                        <td><a href="${book.book_url}" target="_blank">View Book</a></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                table.appendChild(tbody);
+                resultsDiv.appendChild(table);
+            }
+        }
+
+        function showLoading() {
+            loadingDiv.classList.remove('d-none');
+        }
+
+        function hideLoading() {
+            loadingDiv.classList.add('d-none');
+        }
+    </script>
+</body>
+</html>
