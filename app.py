@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://perpus-sederhana.vercel.app/"}})
 api_keys = {
     'key': '5ehadi'
 }
