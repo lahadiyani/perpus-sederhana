@@ -121,7 +121,8 @@ def api_search():
         response = jsonify(result)
         @after_this_request
         def add_header(response):
-            response.headers['Connection'] = 'close'
+            response.headers['Access-Control-Allow-Origin'] = 'https://perpus-sederhana.vercel.app'
+            response.headers['Access-Control-Allow-Methods'] = 'POST'
             return response
         return response, 200
     else:
