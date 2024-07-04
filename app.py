@@ -3,10 +3,12 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 import bs4 as bparse
 from flask import Flask, request, jsonify, after_this_request, send_file
+from flask_cors import CORS
 from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
+CORS(app)
 api_keys = {
     'key': '5ehadi'
 }
