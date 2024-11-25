@@ -1,3 +1,4 @@
+import os
 import requests as r
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -8,9 +9,9 @@ from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://perpus-sederhana.vercel.app/"}})
+CORS(app)
 api_keys = {
-    'key': '5ehadi'
+    'key': os.getenv('API_KEY')
 }
 
 def verify_api_key(api_key):
